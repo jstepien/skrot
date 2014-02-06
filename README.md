@@ -5,6 +5,9 @@ A customisable compression utility dedicated to short inputs.
 ## Usage
 
 Don't use it yet.
+Take a look at some [numbers][numbers], though.
+
+[numbers]: https://github.com/jstepien/skrot/tree/master/benchmark
 
 ## License
 

@@ -5,3 +5,4 @@ skr: skr.rs
 
 clean:
 	rm -f skr
+	+make clean -C benchmark
