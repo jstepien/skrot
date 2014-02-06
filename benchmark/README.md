@@ -41,17 +41,31 @@ Max.   :150.0   Max.   :67.00   Max.   :0.457   Max.   :0.059   Max.   :0.038
 ## The simplewiki benchmark
 
 This benchmark uses a [dump][w] of Simple English Wikipedia's articles names.
-Names are filtered; only ones having at least 20B are considered. The results
-are similar to ones of the people benchmark.
+Names are filtered; only ones having at least 20B are considered. Space savings
+are around 20%.
 
 ```
-   Original        Encoded          Ratio         Enc. time      Dec. time
-Min.   :21.00   Min.   :14.00   Min.   :0.263   Min.   :0.056  Min.   :0.024
-1st Qu.:24.00   1st Qu.:14.00   1st Qu.:0.454   1st Qu.:0.059  1st Qu.:0.026
-Median :28.00   Median :15.00   Median :0.538   Median :0.060  Median :0.028
-Mean   :29.54   Mean   :15.03   Mean   :0.537   Mean   :0.062  Mean   :0.028
-3rd Qu.:33.00   3rd Qu.:16.00   3rd Qu.:0.585   3rd Qu.:0.062  3rd Qu.:0.029
-Max.   :57.00   Max.   :17.00   Max.   :0.761   Max.   :0.079  Max.   :0.039
+   Original        Encoded          Ratio         Enc. time       Dec. time
+Min.   :21.00   Min.   :14.00   Min.   :0.327   Min.   :0.062   Min.   :0.025
+1st Qu.:22.75   1st Qu.:19.00   1st Qu.:0.663   1st Qu.:0.065   1st Qu.:0.027
+Median :26.00   Median :22.00   Median :0.812   Median :0.067   Median :0.029
+Mean   :29.91   Mean   :21.95   Mean   :0.787   Mean   :0.068   Mean   :0.029
+3rd Qu.:32.00   3rd Qu.:25.00   3rd Qu.:0.952   3rd Qu.:0.070   3rd Qu.:0.030
+Max.   :81.00   Max.   :38.00   Max.   :1.190   Max.   :0.077   Max.   :0.037
+
+```
+
+For a comparison, here are results for the same dataset but limited to names not
+shorter than 30B. Here savings are over 40%.
+
+```
+   Original        Encoded          Ratio         Enc. time       Dec. time
+Min.   :31.00   Min.   :14.00   Min.   :0.291   Min.   :0.068   Min.   :0.025
+1st Qu.:32.00   1st Qu.:17.00   1st Qu.:0.466   1st Qu.:0.072   1st Qu.:0.027
+Median :35.00   Median :22.00   Median :0.548   Median :0.073   Median :0.029
+Mean   :38.67   Mean   :22.06   Mean   :0.586   Mean   :0.074   Mean   :0.029
+3rd Qu.:41.25   3rd Qu.:25.25   3rd Qu.:0.682   3rd Qu.:0.076   3rd Qu.:0.031
+Max.   :73.00   Max.   :37.00   Max.   :1.032   Max.   :0.082   Max.   :0.036
 ```
 
 All results above were obtained on a glacial age Core 2 Duo running at 2.1GHz.

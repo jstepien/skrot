@@ -8,7 +8,9 @@ tmpfile = Dir::Tmpname.make_tmpname "tmp", nil
 begin
   while ex = STDIN.gets do
     enc = Benchmark.measure do
-      `echo -n "#{ex.gsub '"', '\\"'}" | ../skr #{corpus} > #{tmpfile}`
+      IO.popen "sh -c '../skr #{corpus} > #{tmpfile}'", "w" do |io|
+        io.write ex
+      end
     end
     len = `wc -c #{tmpfile}`.to_i
     dec = Benchmark.measure do

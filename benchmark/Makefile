@@ -1,15 +1,17 @@
 .PHONY: all clean
+RANDOMISE = ruby -pe '$$_ = "\#{rand} \#{$$_}"' | sort | sed 's/[\.0-9]* //'
 
-all: ../skr people.csv simplewiki.csv
+all: people.csv simplewiki-20.csv simplewiki-30.csv
 	(\
 		echo 'summary(read.csv("people.csv"))';\
-		echo 'summary(read.csv("simplewiki.csv"))';\
+		echo 'summary(read.csv("simplewiki-20.csv"))';\
+		echo 'summary(read.csv("simplewiki-30.csv"))';\
 		) | R -q --vanilla
 
 ../skr:
 	+make -C .. skr
 
-people.csv: people.lzma people-sample
+people.csv: ../skr people.lzma people-sample
 	cat people-sample | ./benchmark.rb people.lzma > $@
 
 people-sample:
@@ -20,18 +22,30 @@ people.lzma:
 
 DUMP = simplewiki-20140116-all-titles
 
-simplewiki.csv: simplewiki.lzma simplewiki-sample
-	cat simplewiki-sample | ./benchmark.rb simplewiki.lzma > $@
+simplewiki-20.csv: ../skr simplewiki-20.lzma simplewiki-20-sample
+	cat simplewiki-20-sample | ./benchmark.rb simplewiki-20.lzma > $@
 
-simplewiki-sample: $(DUMP)
-	head -100 $^ > $@
+simplewiki-20-sample: $(DUMP)-20
+	cat $^ | $(RANDOMISE) | head -100 > $@
 
-simplewiki.lzma: $(DUMP)
-	head -1000 $^ | lzma -e > $@
+simplewiki-20.lzma: $(DUMP)-20
+	cat $^ | $(RANDOMISE) | head -1000 | lzma -e > $@
 
-$(DUMP):
-	curl -s http://dumps.wikimedia.org/simplewiki/20140116/$@.gz \
-		| zcat | egrep '.{20}' | sort --random-sort > $@
+simplewiki-30.csv: ../skr simplewiki-30.lzma simplewiki-30-sample
+	cat simplewiki-30-sample | ./benchmark.rb simplewiki-30.lzma > $@
+
+simplewiki-30-sample: $(DUMP)-30
+	cat $^ | $(RANDOMISE) | head -100 > $@
+
+simplewiki-30.lzma: $(DUMP)-30
+	cat $^ | $(RANDOMISE) | head -1000 | lzma -e > $@
+
+$(DUMP)-20:
+	curl -s http://dumps.wikimedia.org/simplewiki/20140116/$(DUMP).gz \
+		| zcat | egrep '.{20}' > $@
+
+$(DUMP)-30: $(DUMP)-20
+	cat $< | egrep '.{30}' > $@
 
 clean:
-	rm -f {people,simplewiki}{.lzma,.csv,-sample} $(DUMP)
+	rm -f {people,simplewiki}*{.lzma,.csv,-sample} $(DUMP)*
