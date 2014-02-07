@@ -2,6 +2,9 @@ use std::os::args;
 use std::run::{Process, ProcessOptions};
 use std::io::{stdin, stdout, File};
 use std::path::Path;
+use std::libc::funcs::posix88::unistd::execv;
+use std::ptr::null;
+use std::vec::append_one;
 
 fn exec(cmd: ~str, input: &[u8]) -> Option<~[u8]> {
   let args = [~"-c", cmd];
@@ -46,15 +49,27 @@ fn decompress(corpus: ~[u8]) {
   stdout().write(decompressed.slice_from(full_corpus_len));
 }
 
+fn exec_lzma() {
+  unsafe {
+    let args = append_one(
+      ["env", "lzma", "-e"].map(|s| { s.to_c_str().unwrap() }),
+      null());
+    assert!(execv("/usr/bin/env".to_c_str().unwrap(), args.as_ptr()) == 0);
+  }
+}
+
 fn main() {
   let args = args();
-  assert!(args.len() == 2);
-  let prog_name: &str = args[0];
-  let corpus_file: &str = args[1];
-  let corpus = File::open(&Path::new(corpus_file)).read_to_end();
-  if prog_name.ends_with("unskr") {
-    decompress(corpus)
+  let corpus = || {
+    assert!(args.len() == 2);
+    let corpus_file: &str = args[1];
+    File::open(&Path::new(corpus_file)).read_to_end()
+  };
+  if args[0].ends_with("mkskr") {
+    exec_lzma()
+  } else if args[0].ends_with("unskr") {
+    decompress(corpus())
   } else {
-    compress(corpus)
+    compress(corpus())
   }
 }
