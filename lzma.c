@@ -23,11 +23,22 @@ err(lzma_ret ret) {
       msg = "Specified integrity check is not supported";
       break;
 
+    case LZMA_FORMAT_ERROR:
+      msg = "The input is not in the .lzma format";
+      break;
+
+    case LZMA_DATA_ERROR:
+      msg = "Compressed file is corrupt";
+      break;
+
+    case LZMA_BUF_ERROR:
+      msg = "Compressed file is truncated or otherwise corrupt";
+      break;
+
     default:
       msg = "Unknown error, possibly a bug";
       break;
   }
-
   fprintf(stderr, "Error initializing LZMA: %s (error code %u)\n", msg, ret);
   return -1;
 }
@@ -85,42 +96,14 @@ pipe(lzma_stream *strm, uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
     if (ret != LZMA_OK) {
       if (ret == LZMA_STREAM_END)
         return nout;
-
-      const char *msg;
-      switch (ret) {
-        case LZMA_MEM_ERROR:
-          msg = "Memory allocation failed";
-          break;
-
-        case LZMA_FORMAT_ERROR:
-          msg = "The input is not in the .xz format";
-          break;
-
-        case LZMA_OPTIONS_ERROR:
-          msg = "Unsupported compression options";
-          break;
-
-        case LZMA_DATA_ERROR:
-          msg = "Compressed file is corrupt";
-          break;
-
-        case LZMA_BUF_ERROR:
-          msg = "Compressed file is truncated or otherwise corrupt";
-          break;
-
-        default:
-          msg = "Unknown error, possibly a bug";
-          break;
-      }
-
-      fprintf(stderr, "Decoder error: %s (error code %u)\n", msg, ret);
-      return -1;
+      else
+        err(ret);
     }
   }
 }
 
 int
-lzma (uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
+lzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   lzma_stream strm = LZMA_STREAM_INIT;
   if (init_encoder(&strm) < 0)
     return -1;
@@ -130,7 +113,7 @@ lzma (uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
 }
 
 int
-unlzma (uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
+unlzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   lzma_stream strm = LZMA_STREAM_INIT;
   if (init_decoder(&strm) < 0)
     return -1;
