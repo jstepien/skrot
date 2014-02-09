@@ -1,3 +1,5 @@
+extern mod extra;
+
 use std::os::args;
 use std::io::{stdin, stdout, File};
 use std::path::Path;
@@ -7,6 +9,8 @@ use std::vec::append_one;
 use std::libc::types::os::arch::c95::{c_int, size_t};
 use std::libc::types::common::c95::c_void;
 use std::libc::funcs::c95::stdlib::free;
+use extra::future::Future;
+use extra::arc::Arc;
 
 extern {
   fn unlzma(inp: *u8, ninp: size_t, out: **u8, nout: size_t) -> c_int;
@@ -52,12 +56,18 @@ fn compress(corpus: ~[u8]) {
 
 
 fn decompress(corpus: ~[u8]) {
+  let arc = Arc::new(corpus);
+  let (port, chan) = Chan::new();
+  chan.send(arc.clone());
+  let mut fut = do Future::spawn {
+    let arc = port.recv();
+    unlzma_vec(*arc.get()).len()
+  };
   let patch = stdin().read_to_end();
-  let cutoff = corpus.len() - patch[0] as uint;
-  let patched = corpus.slice(0, cutoff) + patch.slice_from(1);
+  let cutoff = arc.get().len() - patch[0] as uint;
+  let patched = arc.get().slice(0, cutoff) + patch.slice_from(1);
   let decompressed = unlzma_vec(patched);
-  let full_corpus_len = unlzma_vec(corpus).len();
-  stdout().write(decompressed.slice_from(full_corpus_len));
+  stdout().write(decompressed.slice_from(fut.get()));
 }
 
 fn exec_lzma() {
