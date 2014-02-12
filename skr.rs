@@ -1,11 +1,7 @@
 extern mod extra;
 
-use std::os::args;
-use std::io::{stdin, stdout, File};
-use std::path::Path;
-use std::libc::funcs::posix88::unistd::execv;
 use std::ptr::null;
-use std::vec::append_one;
+use std::vec::raw::from_buf_raw;
 use std::libc::types::os::arch::c95::{c_int, size_t};
 use std::libc::types::common::c95::c_void;
 use std::libc::funcs::c95::stdlib::free;
@@ -21,10 +17,10 @@ type Fun = extern "C" unsafe fn(*u8, u64, **u8, u64) -> i32;
 
 fn process_vec(inp: &[u8], fun: Fun) -> ~[u8] {
   unsafe {
-    let buf = std::ptr::null();
+    let buf = null();
     let nout = fun(inp.as_ptr(), inp.len() as size_t, &buf, 0);
-    assert!(buf != std::ptr::null() && nout > 0);
-    let out = std::vec::raw::from_buf_raw(buf, nout as uint);
+    assert!(buf != null() && nout > 0);
+    let out = from_buf_raw(buf, nout as uint);
     free(buf as *c_void);
     out
   }
@@ -38,10 +34,10 @@ fn lzma_vec(inp: &[u8]) -> ~[u8] {
   process_vec(inp, lzma)
 }
 
-fn compress(corpus: ~[u8]) {
+pub fn compress(corpus: &[u8], input: &[u8]) -> ~[u8] {
   let compressed = {
     let full_corpus = unlzma_vec(corpus);
-    let to_compress = full_corpus + stdin().read_to_end();
+    let to_compress = full_corpus + input;
     lzma_vec(to_compress)
   };
   let mut idx = 0;
@@ -50,47 +46,23 @@ fn compress(corpus: ~[u8]) {
   }
   let diff: uint = corpus.len() - idx;
   assert!(diff <= 0xff);
-  stdout().write_u8(diff as u8);
-  stdout().write(compressed.slice_from(idx));
+  [diff as u8] + compressed.slice_from(idx)
 }
 
-
-fn decompress(corpus: ~[u8]) {
-  let arc = Arc::new(corpus);
+pub fn decompress(corpus: &[u8], input: &[u8]) -> ~[u8] {
+  let arc = Arc::new(corpus.to_owned());
   let (port, chan) = Chan::new();
   chan.send(arc.clone());
   let mut fut = do Future::spawn {
     let arc = port.recv();
     unlzma_vec(*arc.get()).len()
   };
-  let patch = stdin().read_to_end();
-  let cutoff = arc.get().len() - patch[0] as uint;
-  let patched = arc.get().slice(0, cutoff) + patch.slice_from(1);
+  let cutoff = arc.get().len() - input[0] as uint;
+  let patched = arc.get().slice(0, cutoff) + input.slice_from(1);
   let decompressed = unlzma_vec(patched);
-  stdout().write(decompressed.slice_from(fut.get()));
+  decompressed.slice_from(fut.get()).to_owned()
 }
 
-fn exec_lzma() {
-  unsafe {
-    let args = append_one(
-      ["env", "lzma", "-e"].map(|s| { s.to_c_str().unwrap() }),
-      null());
-    assert!(execv("/usr/bin/env".to_c_str().unwrap(), args.as_ptr()) == 0);
-  }
-}
-
-fn main() {
-  let args = args();
-  let corpus = || {
-    assert!(args.len() == 2);
-    let corpus_file: &str = args[1];
-    File::open(&Path::new(corpus_file)).read_to_end()
-  };
-  if args[0].ends_with("mkskr") {
-    exec_lzma()
-  } else if args[0].ends_with("unskr") {
-    decompress(corpus())
-  } else {
-    compress(corpus())
-  }
+pub fn corpus(input: &[u8]) -> ~[u8] {
+  lzma_vec(input)
 }
