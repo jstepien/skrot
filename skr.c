@@ -1,11 +1,14 @@
-/*
- * Based on 01_compress_easy.c and 02_decompress.c by Lasse Collin.
- */
-
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <lzma.h>
+#include <assert.h>
+#include <skr.h>
+
+/*
+ * Based on 01_compress_easy.c and 02_decompress.c by Lasse Collin.
+ */
 
 static int
 err(lzma_ret ret) {
@@ -97,12 +100,12 @@ pipe(lzma_stream *strm, uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
       if (ret == LZMA_STREAM_END)
         return nout;
       else
-        err(ret);
+        return err(ret);
     }
   }
 }
 
-int
+static int
 lzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   lzma_stream strm = LZMA_STREAM_INIT;
   if (init_encoder(&strm) < 0)
@@ -112,7 +115,7 @@ lzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   return ret;
 }
 
-int
+static int
 unlzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   lzma_stream strm = LZMA_STREAM_INIT;
   if (init_decoder(&strm) < 0)
@@ -120,4 +123,60 @@ unlzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   int ret = pipe(&strm, in, nin, out, nout);
   lzma_end(&strm);
   return ret;
+}
+
+/*
+ * Implementation of the API defined in skr.h
+ */
+
+int
+skr_corpus(uint8_t* input, size_t input_len,
+           uint8_t** output, size_t output_len) {
+  return lzma(input, input_len, output, output_len);
+}
+
+int
+skr_compress(uint8_t* corpus, size_t corpus_len,
+             uint8_t* input, size_t input_len,
+             uint8_t** output, size_t output_len) {
+  uint8_t *full_corpus = 0, *compr = 0;
+  size_t full_corpus_len = unlzma(corpus, corpus_len, &full_corpus, 0);
+  full_corpus = realloc(full_corpus, full_corpus_len + input_len);
+  memcpy(full_corpus + full_corpus_len, input, input_len);
+  size_t compr_len = lzma(full_corpus, full_corpus_len + input_len, &compr, 0);
+  free(full_corpus);
+  size_t idx = 0;
+  while (compr[idx] == corpus[idx])
+    ++idx;
+  size_t needed_out_len = compr_len - idx + 1;
+  if (output_len < needed_out_len)
+    *output = realloc(*output, needed_out_len);
+  size_t diff = corpus_len - idx;
+  assert(diff <= 0xff);
+  **output = (uint8_t) diff;
+  memcpy(*output + 1, compr + idx, needed_out_len - 1);
+  free(compr);
+  return needed_out_len;
+}
+
+int
+skr_decompress(uint8_t* corpus, size_t corpus_len,
+               uint8_t* input, size_t input_len,
+               uint8_t** output, size_t output_len) {
+  uint8_t *buffer = 0, *decomp = 0;
+  size_t full_corpus_len = unlzma(corpus, corpus_len, &buffer, 0);
+  size_t cutoff = corpus_len - input[0];
+  size_t patched_len = cutoff + input_len - 1;
+  if (full_corpus_len < patched_len)
+    buffer = realloc(buffer, patched_len);
+  memcpy(buffer, corpus, cutoff);
+  memcpy(buffer + cutoff, input + 1, input_len - 1);
+  size_t decompr_len = unlzma(buffer, patched_len, &decomp, 0);
+  free(buffer);
+  size_t needed_out_len = decompr_len - full_corpus_len;
+  if (output_len < needed_out_len)
+    *output = realloc(*output, needed_out_len);
+  memcpy(*output, decomp + full_corpus_len, needed_out_len);
+  free(decomp);
+  return needed_out_len;
 }
