@@ -6,12 +6,12 @@ use std::ptr::null;
 use std::vec::raw::from_buf_raw;
 
 extern {
-  fn skr_corpus(inp: *u8, inlen: size_t,
-                outp: **u8, outlen: size_t) -> size_t;
-  fn skr_compress(corp: *u8, corlen: size_t,
+  fn skr_model(inp: *u8, inlen: size_t,
+               outp: **u8, outlen: size_t) -> size_t;
+  fn skr_compress(model: *u8, modlen: size_t,
                   inp: *u8, inlen: size_t,
                   outp: **u8, outlen: size_t) -> size_t;
-  fn skr_decompress(corp: *u8, corlen: size_t,
+  fn skr_decompress(model: *u8, modlen: size_t,
                     inp: *u8, inlen: size_t,
                     outp: **u8, outlen: size_t) -> size_t;
 }
@@ -45,19 +45,19 @@ fn process_vec2(inp: &[u8], inp2: &[u8], fun: Fun2) -> ~[u8] {
 
 fn main() {
   let args = args();
-  let corpus = || {
+  let model = || {
     assert!(args.len() == 2);
-    let corpus_file: &str = args[1];
-    File::open(&Path::new(corpus_file)).read_to_end()
+    let model_file: &str = args[1];
+    File::open(&Path::new(model_file)).read_to_end()
   };
   let output = {
     let input = || { stdin().read_to_end() };
     if args[0].ends_with("mkskr") {
-      process_vec(input(), skr_corpus)
+      process_vec(input(), skr_model)
     } else if args[0].ends_with("unskr") {
-      process_vec2(corpus(), input(), skr_decompress)
+      process_vec2(model(), input(), skr_decompress)
     } else {
-      process_vec2(corpus(), input(), skr_compress)
+      process_vec2(model(), input(), skr_compress)
     }
   };
   stdout().write(output)

@@ -69,7 +69,7 @@ init_decoder(lzma_stream *strm) {
 }
 
 static int
-pipe(lzma_stream *strm, uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
+pipe(lzma_stream *strm, const uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   uint8_t outbuf[1024];
   size_t nread = 0;
   strm->next_in = in;
@@ -106,7 +106,7 @@ pipe(lzma_stream *strm, uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
 }
 
 static int
-lzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
+lzma(const uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   lzma_stream strm = LZMA_STREAM_INIT;
   if (init_encoder(&strm) < 0)
     return -1;
@@ -116,7 +116,7 @@ lzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
 }
 
 static int
-unlzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
+unlzma(const uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   lzma_stream strm = LZMA_STREAM_INIT;
   if (init_decoder(&strm) < 0)
     return -1;
@@ -130,28 +130,28 @@ unlzma(uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
  */
 
 int
-skr_corpus(uint8_t* input, size_t input_len,
-           uint8_t** output, size_t output_len) {
+skr_model(const uint8_t* input, size_t input_len,
+          uint8_t** output, size_t output_len) {
   return lzma(input, input_len, output, output_len);
 }
 
 int
-skr_compress(uint8_t* corpus, size_t corpus_len,
-             uint8_t* input, size_t input_len,
+skr_compress(const uint8_t* model, size_t model_len,
+             const uint8_t* input, size_t input_len,
              uint8_t** output, size_t output_len) {
-  uint8_t *full_corpus = 0, *compr = 0;
-  size_t full_corpus_len = unlzma(corpus, corpus_len, &full_corpus, 0);
-  full_corpus = realloc(full_corpus, full_corpus_len + input_len);
-  memcpy(full_corpus + full_corpus_len, input, input_len);
-  size_t compr_len = lzma(full_corpus, full_corpus_len + input_len, &compr, 0);
-  free(full_corpus);
+  uint8_t *full_model = 0, *compr = 0;
+  size_t full_model_len = unlzma(model, model_len, &full_model, 0);
+  full_model = realloc(full_model, full_model_len + input_len);
+  memcpy(full_model + full_model_len, input, input_len);
+  size_t compr_len = lzma(full_model, full_model_len + input_len, &compr, 0);
+  free(full_model);
   size_t idx = 0;
-  while (compr[idx] == corpus[idx])
+  while (compr[idx] == model[idx])
     ++idx;
   size_t needed_out_len = compr_len - idx + 1;
   if (output_len < needed_out_len)
     *output = realloc(*output, needed_out_len);
-  size_t diff = corpus_len - idx;
+  size_t diff = model_len - idx;
   assert(diff <= 0xff);
   **output = (uint8_t) diff;
   memcpy(*output + 1, compr + idx, needed_out_len - 1);
@@ -160,23 +160,23 @@ skr_compress(uint8_t* corpus, size_t corpus_len,
 }
 
 int
-skr_decompress(uint8_t* corpus, size_t corpus_len,
-               uint8_t* input, size_t input_len,
+skr_decompress(const uint8_t* model, size_t model_len,
+               const uint8_t* input, size_t input_len,
                uint8_t** output, size_t output_len) {
   uint8_t *buffer = 0, *decomp = 0;
-  size_t full_corpus_len = unlzma(corpus, corpus_len, &buffer, 0);
-  size_t cutoff = corpus_len - input[0];
+  size_t full_model_len = unlzma(model, model_len, &buffer, 0);
+  size_t cutoff = model_len - input[0];
   size_t patched_len = cutoff + input_len - 1;
-  if (full_corpus_len < patched_len)
+  if (full_model_len < patched_len)
     buffer = realloc(buffer, patched_len);
-  memcpy(buffer, corpus, cutoff);
+  memcpy(buffer, model, cutoff);
   memcpy(buffer + cutoff, input + 1, input_len - 1);
   size_t decompr_len = unlzma(buffer, patched_len, &decomp, 0);
   free(buffer);
-  size_t needed_out_len = decompr_len - full_corpus_len;
+  size_t needed_out_len = decompr_len - full_model_len;
   if (output_len < needed_out_len)
     *output = realloc(*output, needed_out_len);
-  memcpy(*output, decomp + full_corpus_len, needed_out_len);
+  memcpy(*output, decomp + full_model_len, needed_out_len);
   free(decomp);
   return needed_out_len;
 }
