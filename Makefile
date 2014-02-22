@@ -2,8 +2,10 @@
 
 CFLAGS ?= -std=c99 -O2 -Wall -Werror -fPIC
 ifeq ($(shell uname), Darwin)
+	LIBRARY_PATH = DYLD_LIBRARY_PATH
 	SHARED_EXT = dylib
 else
+	LIBRARY_PATH = LD_LIBRARY_PATH
 	SHARED_EXT = so
 endif
 SHARED_LIB = libskr.$(SHARED_EXT)
@@ -21,4 +23,4 @@ clean:
 	+make clean -C benchmark
 
 benchmark:
-	+make -C benchmark LD_LIBRARY_PATH=$(PWD)
+	+make -C benchmark $(LIBRARY_PATH)=$(PWD)
