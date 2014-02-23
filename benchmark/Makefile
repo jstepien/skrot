@@ -48,4 +48,4 @@ $(DUMP)-30: $(DUMP)-20
 	cat $< | egrep '.{30}' > $@
 
 clean:
-	rm -f {people,simplewiki}*{.lzma,.csv,-sample} $(DUMP)*
+	rm -f people* simplewiki*
