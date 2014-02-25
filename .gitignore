@@ -1,0 +1,6 @@
+*.dylib
+*.so
+benchmark/measure
+benchmark/people*
+benchmark/simplewiki*
+skr
