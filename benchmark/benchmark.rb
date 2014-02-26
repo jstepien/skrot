@@ -26,8 +26,13 @@ begin
         io.write comp
       end
     end
-    ratio = len * 1.0 / ex.length
-    result = [ex.length, len, ratio, enc.real / n_enc, dec.real / n_dec]
+    result = [
+      ex.length,
+      len,
+      len * 1.0 / ex.length,
+      enc.real / n_enc * 1e3,
+      dec.real / n_dec * 1e3
+    ]
     puts result.join(",")
   end
 ensure
