@@ -6,6 +6,9 @@ To run code in this directory you'll need Ruby and [Bundler][b].
 
     bundle && make
 
+All results below were obtained on a glacial age Core 2 Duo running at 2.1GHz.
+On an i7 CPU encoding and decoding is nearly twice faster.
+
 ## The people benchmark
 
 `generate_people.rb` uses [Faker][f] to generate JSON-encoded maps with some
@@ -25,17 +28,17 @@ timestamps. A pretty-printed example looks as follows.
 Most of those maps are around 135B long. Standard compression
 tools, e.g. `gzip`, `bzip2` and `xz`, make them even longer. Skrót encoding
 achieves space savings of over 55%. The following table summarises length of
-samples before and after the encoding as well as their ratio and slightly
-overestimated time of encoding and decoding in seconds.
+samples before and after the encoding as well as their ratio and
+time of encoding and decoding in milliseconds.
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :122.0   Min.   :50.00   Min.   :0.362   Min.   :0.045   Min.   :0.022
-1st Qu.:130.0   1st Qu.:53.00   1st Qu.:0.407   1st Qu.:0.048   1st Qu.:0.023
-Median :135.0   Median :56.50   Median :0.420   Median :0.049   Median :0.024
-Mean   :134.5   Mean   :56.54   Mean   :0.420   Mean   :0.049   Mean   :0.025
-3rd Qu.:138.0   3rd Qu.:59.00   3rd Qu.:0.433   3rd Qu.:0.050   3rd Qu.:0.026
-Max.   :150.0   Max.   :67.00   Max.   :0.457   Max.   :0.059   Max.   :0.038
+Min.   :117.0   Min.   :43.00   Min.   :0.338   Min.   :18.97   Min.   :0.709
+1st Qu.:128.0   1st Qu.:50.00   1st Qu.:0.388   1st Qu.:19.10   1st Qu.:0.719
+Median :133.0   Median :53.00   Median :0.405   Median :19.32   Median :0.738
+Mean   :133.2   Mean   :53.76   Mean   :0.403   Mean   :19.30   Mean   :0.737
+3rd Qu.:138.2   3rd Qu.:57.00   3rd Qu.:0.417   3rd Qu.:19.47   3rd Qu.:0.751
+Max.   :150.0   Max.   :67.00   Max.   :0.469   Max.   :20.18   Max.   :0.828
 ```
 
 ## The simplewiki benchmark
@@ -46,13 +49,12 @@ are around 20%.
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :21.00   Min.   :14.00   Min.   :0.327   Min.   :0.062   Min.   :0.025
-1st Qu.:22.75   1st Qu.:19.00   1st Qu.:0.663   1st Qu.:0.065   1st Qu.:0.027
-Median :26.00   Median :22.00   Median :0.812   Median :0.067   Median :0.029
-Mean   :29.91   Mean   :21.95   Mean   :0.787   Mean   :0.068   Mean   :0.029
-3rd Qu.:32.00   3rd Qu.:25.00   3rd Qu.:0.952   3rd Qu.:0.070   3rd Qu.:0.030
-Max.   :81.00   Max.   :38.00   Max.   :1.190   Max.   :0.077   Max.   :0.037
-
+Min.   :21.00   Min.   :14.00   Min.   :0.439   Min.   :30.41   Min.   :3.024
+1st Qu.:24.00   1st Qu.:19.00   1st Qu.:0.666   1st Qu.:30.51   1st Qu.:3.031
+Median :27.00   Median :22.00   Median :0.813   Median :30.64   Median :3.047
+Mean   :29.22   Mean   :22.12   Mean   :0.788   Mean   :30.66   Mean   :3.054
+3rd Qu.:31.00   3rd Qu.:24.00   3rd Qu.:0.907   3rd Qu.:30.78   3rd Qu.:3.068
+Max.   :57.00   Max.   :43.00   Max.   :1.148   Max.   :31.35   Max.   :3.137
 ```
 
 For a comparison, here are results for the same dataset but limited to names not
@@ -60,15 +62,13 @@ shorter than 30B. Here savings are over 40%.
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :31.00   Min.   :14.00   Min.   :0.291   Min.   :0.068   Min.   :0.025
-1st Qu.:32.00   1st Qu.:17.00   1st Qu.:0.466   1st Qu.:0.072   1st Qu.:0.027
-Median :35.00   Median :22.00   Median :0.548   Median :0.073   Median :0.029
-Mean   :38.67   Mean   :22.06   Mean   :0.586   Mean   :0.074   Mean   :0.029
-3rd Qu.:41.25   3rd Qu.:25.25   3rd Qu.:0.682   3rd Qu.:0.076   3rd Qu.:0.031
-Max.   :73.00   Max.   :37.00   Max.   :1.032   Max.   :0.082   Max.   :0.036
+Min.   :31.00   Min.   :13.00   Min.   :0.243   Min.   :36.02   Min.   :3.438
+1st Qu.:33.00   1st Qu.:18.00   1st Qu.:0.478   1st Qu.:36.17   1st Qu.:3.445
+Median :37.00   Median :22.00   Median :0.555   Median :36.28   Median :3.459
+Mean   :39.52   Mean   :22.08   Mean   :0.574   Mean   :36.30   Mean   :3.465
+3rd Qu.:42.00   3rd Qu.:25.25   3rd Qu.:0.689   3rd Qu.:36.41   3rd Qu.:3.480
+Max.   :78.00   Max.   :41.00   Max.   :0.843   Max.   :36.73   Max.   :3.537
 ```
-
-All results above were obtained on a glacial age Core 2 Duo running at 2.1GHz.
 
 [b]: http://bundler.io/
 [r]: http://www.r-project.org/
