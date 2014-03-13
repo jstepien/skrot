@@ -4,4 +4,4 @@ script:
 install:
   - wget "http://ppa.launchpad.net/hansjorg/rust/ubuntu/pool/main/r/rust-0.9/rust-0.9_0.9-1~precise_amd64.deb"
   - sudo dpkg --install rust-0.9_0.9-1~precise_amd64.deb
-  - sudo apt-get install liblzma-dev
+  - sudo apt-get install liblzma-dev liblz4-dev

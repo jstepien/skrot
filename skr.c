@@ -2,9 +2,37 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <lz4.h>
+#include <lz4hc.h>
 #include <lzma.h>
 #include <assert.h>
 #include <skr.h>
+
+static int
+lz4(const uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
+  const size_t limit = LZ4_compressBound(nin);
+  if (nout < limit) {
+    nout = limit;
+    *out = realloc(*out, nout);
+  }
+  nout = LZ4_compressHC((void*) in, (void*) *out, nin);
+  if (nout)
+    return nout;
+  return -1;
+}
+
+static int
+unlz4(const uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
+  const size_t limit = 256 * 1024;
+  if (nout < limit) {
+    nout = limit;
+    *out = realloc(*out, nout);
+  }
+  int real_nout = LZ4_decompress_safe((void*) in, (void*) *out, nin, nout);
+  if (real_nout >= 0)
+    return real_nout;
+  return -1;
+}
 
 /*
  * Based on 01_compress_easy.c and 02_decompress.c by Lasse Collin.
@@ -125,25 +153,53 @@ unlzma(const uint8_t *in, size_t nin, uint8_t **out, size_t nout) {
   return ret;
 }
 
+typedef int ((fun_t)(const uint8_t *, size_t, uint8_t **, size_t));
+
+typedef const struct {
+  fun_t* comp;
+  fun_t* decomp;
+} funs_t;
+
+funs_t function_pairs[] = {
+  { &lzma, &unlzma },
+  { &lz4, &unlz4 },
+};
+
+static funs_t*
+functions_for_options(skr_opts_t* opts) {
+  switch (opts->opts & 1) {
+    case SKR_LZMA:
+      return function_pairs;
+    case SKR_LZ4:
+      return function_pairs + 1;
+    default:
+      return 0;
+  }
+}
+
 /*
  * Implementation of the API defined in skr.h
  */
 
 int
 skr_model(const uint8_t* input, size_t input_len,
-          uint8_t** output, size_t output_len) {
-  return lzma(input, input_len, output, output_len);
+          uint8_t** output, size_t output_len,
+          skr_opts_t* opts) {
+  funs_t *fns = functions_for_options(opts);
+  return fns->comp(input, input_len, output, output_len);
 }
 
 int
 skr_compress(const uint8_t* model, size_t model_len,
              const uint8_t* input, size_t input_len,
-             uint8_t** output, size_t output_len) {
+             uint8_t** output, size_t output_len,
+             skr_opts_t* opts) {
   uint8_t *full_model = 0, *compr = 0;
-  size_t full_model_len = unlzma(model, model_len, &full_model, 0);
+  funs_t *fns = functions_for_options(opts);
+  size_t full_model_len = fns->decomp(model, model_len, &full_model, 0);
   full_model = realloc(full_model, full_model_len + input_len);
   memcpy(full_model + full_model_len, input, input_len);
-  size_t compr_len = lzma(full_model, full_model_len + input_len, &compr, 0);
+  size_t compr_len = fns->comp(full_model, full_model_len + input_len, &compr, 0);
   free(full_model);
   size_t idx = 0;
   while (compr[idx] == model[idx])
@@ -162,16 +218,18 @@ skr_compress(const uint8_t* model, size_t model_len,
 int
 skr_decompress(const uint8_t* model, size_t model_len,
                const uint8_t* input, size_t input_len,
-               uint8_t** output, size_t output_len) {
+               uint8_t** output, size_t output_len,
+               skr_opts_t* opts) {
   uint8_t *buffer = 0, *decomp = 0;
-  size_t full_model_len = unlzma(model, model_len, &buffer, 0);
+  funs_t *fns = functions_for_options(opts);
+  size_t full_model_len = fns->decomp(model, model_len, &buffer, 0);
   size_t cutoff = model_len - input[0];
   size_t patched_len = cutoff + input_len - 1;
   if (full_model_len < patched_len)
     buffer = realloc(buffer, patched_len);
   memcpy(buffer, model, cutoff);
   memcpy(buffer + cutoff, input + 1, input_len - 1);
-  size_t decompr_len = unlzma(buffer, patched_len, &decomp, 0);
+  size_t decompr_len = fns->decomp(buffer, patched_len, &decomp, 0);
   free(buffer);
   size_t needed_out_len = decompr_len - full_model_len;
   if (output_len < needed_out_len)

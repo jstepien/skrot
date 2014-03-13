@@ -13,7 +13,7 @@ SHARED_LIB = libskr.$(SHARED_EXT)
 all: $(SHARED_LIB) skr
 
 $(SHARED_LIB): skr.c
-	$(CC) $(CFLAGS) $^ -shared -o $@ -llzma -I.
+	$(CC) $(CFLAGS) $^ -shared -o $@ -llzma -llz4 -I.
 
 skr: skr.rs $(SHARED_LIB)
 	rustc -O $< -o $@ --link-args "-L. -lskr"

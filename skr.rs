@@ -7,22 +7,26 @@ use std::vec::raw::from_buf_raw;
 
 extern {
   fn skr_model(inp: *u8, inlen: size_t,
-               outp: **u8, outlen: size_t) -> size_t;
+               outp: **u8, outlen: size_t,
+               opts: *u32) -> size_t;
   fn skr_compress(model: *u8, modlen: size_t,
                   inp: *u8, inlen: size_t,
-                  outp: **u8, outlen: size_t) -> size_t;
+                  outp: **u8, outlen: size_t,
+                  opts: *u32) -> size_t;
   fn skr_decompress(model: *u8, modlen: size_t,
                     inp: *u8, inlen: size_t,
-                    outp: **u8, outlen: size_t) -> size_t;
+                    outp: **u8, outlen: size_t,
+                    opts: *u32) -> size_t;
 }
 
-type Fun = extern "C" unsafe fn(*u8, size_t, **u8, size_t) -> size_t;
-type Fun2 = extern "C" unsafe fn(*u8, size_t, *u8, size_t, **u8, size_t) -> size_t;
+type Fun = extern "C" unsafe fn(*u8, size_t, **u8, size_t, *u32) -> size_t;
+type Fun2 = extern "C" unsafe fn(*u8, size_t, *u8, size_t, **u8, size_t, *u32) -> size_t;
 
 fn process_vec(inp: &[u8], fun: Fun) -> ~[u8] {
   unsafe {
+    let default_opts = 0;
     let buf = null();
-    let nout = fun(inp.as_ptr(), inp.len() as size_t, &buf, 0);
+    let nout = fun(inp.as_ptr(), inp.len() as size_t, &buf, 0, &default_opts);
     assert!(buf != null() && nout > 0);
     let out = from_buf_raw(buf, nout as uint);
     free(buf as *c_void);
@@ -32,10 +36,12 @@ fn process_vec(inp: &[u8], fun: Fun) -> ~[u8] {
 
 fn process_vec2(inp: &[u8], inp2: &[u8], fun: Fun2) -> ~[u8] {
   unsafe {
+    let default_opts = 0;
     let buf = null();
     let nout = fun(inp.as_ptr(), inp.len() as size_t,
                    inp2.as_ptr(), inp2.len() as size_t,
-                   &buf, 0);
+                   &buf, 0,
+                   &default_opts);
     assert!(buf != null() && nout > 0);
     let out = from_buf_raw(buf, nout as uint);
     free(buf as *c_void);
