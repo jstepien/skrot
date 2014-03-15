@@ -2,7 +2,7 @@ language: c
 script:
   - make
 install:
-  - sudo add-apt-repository ppa:gezakovacs/lz4
-  - sudo add-apt-repository ppa:hansjorg/rust
+  - sudo add-apt-repository -y ppa:gezakovacs/lz4
+  - sudo add-apt-repository -y ppa:hansjorg/rust
   - sudo apt-get update
   - sudo apt-get install liblzma-dev liblz4-dev rust
