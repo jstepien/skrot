@@ -10,8 +10,9 @@ Take a look at some [numbers][numbers].
 
 A tentative C API is specified in `skr.h`.
 It's implemented in form of a shared library `libskr`.
-Its only dependency is [liblzma][xz]; it's installed by default on most
-contemporary GNU/Linux machines and is available in [Homebrew][brew].
+Its only dependencies are [liblz4][lz4] and [liblzma][xz];
+they're present in repositories of most contemporary GNU/Linux distributions and
+they're available in [Homebrew][brew] as `lz4` and `xz`.
 
 `skr` and its aliases `unskr` and `mkskr` are command line wrappers around
 `libskr`.
@@ -27,17 +28,23 @@ They should be invoked in a following way:
 Both `skr` and `libskr` can be built by invoking `make`.
 
 [xz]: http://tukaani.org/xz/
-[brew]: https://github.com/Homebrew/homebrew/blob/master/Library/Formula/xz.rb
+[lz4]: https://code.google.com/p/lz4/
+[brew]: https://github.com/Homebrew/homebrew
 
 ## Theoretical background
 
 [LZMA][lzma] is a dictionary based compression algorithm used in, among others,
 [7zip][7z] and [xz-utils][xz].
-One of its interesting features is the fact that changes introduced at the end
-of an uncompressed input stream result only in changes at the end of the
-compressed output stream; the rest remains intact.
-Moreover, in its basic form—LZMA1—it doesn't use any checksums.
+[LZ4][lz4-algo] is a compression algorithm belonging to the same family as LZMA
+and it's used among others in the Linux kernel, Hadoop and BSD implementation of
+ZFS.
+One of interesting features of these algorithms is the fact that changes
+introduced at the end of an uncompressed input stream result only in changes at
+the end of the compressed output stream; the rest remains intact.
+Moreover, LZ4 and the basic form of LZMA—i.e. LZMA1—don't use any checksums.
 
+Let's focus on LZMA1 in the rest of this section
+(the same applies to LZ4, though).
 Consider the following back-of-the-envelope reasoning.
 Let's take two non-empty byte sequences, `a` and `b`.
 Compressing `a` with LZMA1 produces `comp_a`.
@@ -96,6 +103,7 @@ In order to obtain `x` given `n` and byte sequence `patch`,
 That's the whole algorithm. It tends to work.
 
 [lzma]: https://en.wikipedia.org/wiki/LZMA
+[lz4-algo]: https://en.wikipedia.org/wiki/LZ4_%28compression_algorithm%29
 [7z]: http://www.7-zip.org/
 
 ## License
