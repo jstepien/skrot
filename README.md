@@ -2,7 +2,14 @@
 
 A customisable compression utility dedicated to short inputs.
 
-Take a look at some [numbers][numbers].
+Skrót is a C library allowing you to build a model of your data and use it to
+compress short byte sequences of predictable contents.
+It can efficiently compress byte sequences shorter than 200B.
+It's based on established dictionary-based data compression algorithms: LZMA and
+LZ4.
+
+Interested in some numbers?
+Take a look at [results of our benchmarks][numbers].
 
 [numbers]: https://github.com/jstepien/skrot/tree/master/benchmark
 
