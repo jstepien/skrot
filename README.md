@@ -113,6 +113,13 @@ That's the whole algorithm. It tends to work.
 [lz4-algo]: https://en.wikipedia.org/wiki/LZ4_%28compression_algorithm%29
 [7z]: http://www.7-zip.org/
 
+## Related work
+
+[Smaz][smaz] “is a simple compression library suitable for compressing very
+short strings”. It excels at compressing English.
+
+[smaz]: https://github.com/antirez/smaz
+
 ## License
 
     Copyright (c) 2014 Jan Stępień
