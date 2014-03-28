@@ -2,6 +2,7 @@
 #define SKR_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 /*
  * (De)compression options. So far its only purpose is deciding whether we want
