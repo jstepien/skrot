@@ -10,7 +10,7 @@ all: measure
 		) | R -q --vanilla
 
 measure: measure.rs ../skr
-	rustc -O $< -o $@ --link-args "-L.. -lskr"
+	rustc -O $< -o $@ -L ..
 
 ../skr:
 	+make -C .. skr

@@ -3,8 +3,9 @@ use std::libc::{size_t, free, c_void};
 use std::os::args;
 use std::path::Path;
 use std::ptr::null;
-use std::vec::raw::from_buf_raw;
+use std::slice::raw::from_buf_raw;
 
+#[link(name = "skr")]
 extern {
   fn skr_model(inp: *u8, inlen: size_t,
                outp: **u8, outlen: size_t,
@@ -29,7 +30,7 @@ fn process_vec(inp: &[u8], fun: Fun) -> ~[u8] {
     let nout = fun(inp.as_ptr(), inp.len() as size_t, &buf, 0, &default_opts);
     assert!(buf != null() && nout > 0);
     let out = from_buf_raw(buf, nout as uint);
-    free(buf as *c_void);
+    free(buf as *mut c_void);
     out
   }
 }
@@ -44,7 +45,7 @@ fn process_vec2(inp: &[u8], inp2: &[u8], fun: Fun2) -> ~[u8] {
                    &default_opts);
     assert!(buf != null() && nout > 0);
     let out = from_buf_raw(buf, nout as uint);
-    free(buf as *c_void);
+    free(buf as *mut c_void);
     out
   }
 }
@@ -54,10 +55,10 @@ fn main() {
   let model = || {
     assert!(args.len() == 2);
     let model_file: &str = args[1];
-    File::open(&Path::new(model_file)).read_to_end()
+    File::open(&Path::new(model_file)).read_to_end().unwrap()
   };
   let output = {
-    let input = || { stdin().read_to_end() };
+    let input = || { stdin().read_to_end().unwrap() };
     if args[0].ends_with("mkskr") {
       process_vec(input(), skr_model)
     } else if args[0].ends_with("unskr") {
@@ -66,5 +67,5 @@ fn main() {
       process_vec2(model(), input(), skr_compress)
     }
   };
-  stdout().write(output)
+  let _ = stdout().write(output).unwrap();
 }

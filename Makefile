@@ -16,7 +16,7 @@ $(SHARED_LIB): skr.c
 	$(CC) $(CFLAGS) $^ -shared -o $@ -llzma -llz4 -I.
 
 skr: skr.rs $(SHARED_LIB)
-	rustc -O $< -o $@ --link-args "-L. -lskr"
+	rustc -O $< -o $@
 
 clean:
 	rm -f skr $(SHARED_LIB)
