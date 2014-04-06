@@ -8,4 +8,7 @@ public interface ISkrot {
 
   void compress(final InputStream model, final InputStream input,
       final OutputStream output) throws IOException;
+
+  void decompress(final InputStream model, final InputStream input,
+      final OutputStream output) throws IOException;
 }

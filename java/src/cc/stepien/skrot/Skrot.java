@@ -44,6 +44,13 @@ public class Skrot {
       throwUnless(dec.Code(inputStream, out, -1));
     }
 
+    private void unlzma(final InputStream input, final OutputStream out)
+      throws IOException
+    {
+      final byte[] bytes = IOUtils.toByteArray(input);
+      unlzma(bytes, out);
+    }
+
     private InputStream concat(final InputStream in1, final InputStream in2) {
       return new SequenceInputStream(in1, in2);
     }
@@ -71,6 +78,24 @@ public class Skrot {
       assert(diff < 0xff);
       output.write(diff);
       output.write(comprConcatArr, idx, comprConcatArr.length - idx);
+    }
+
+    public void decompress(final InputStream model, final InputStream input,
+        final OutputStream output) throws IOException {
+      final byte[] modelArr = IOUtils.toByteArray(model);
+      final byte[] inputArr = IOUtils.toByteArray(input);
+      final int cutoff = modelArr.length - inputArr[0];
+      final int patchedLen = cutoff + inputArr.length - 1;
+      final ByteArrayOutputStream uncompModel = new ByteArrayOutputStream();
+      unlzma(modelArr, uncompModel);
+      final int fullModelLen = uncompModel.toByteArray().length;
+      final InputStream comprConcat =
+        concat(new ByteArrayInputStream(modelArr, 0, cutoff),
+            new ByteArrayInputStream(inputArr, 1, inputArr.length - 1));
+      final ByteArrayOutputStream concat = new ByteArrayOutputStream();
+      unlzma(comprConcat, concat);
+      final byte[] concatArr = concat.toByteArray();
+      output.write(concatArr, fullModelLen, concatArr.length - fullModelLen);
     }
   };
 }
