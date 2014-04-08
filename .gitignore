@@ -3,4 +3,6 @@
 benchmark/measure
 benchmark/people*
 benchmark/simplewiki*
+java/target
+java/.lein-repl-history
 skr
