@@ -4,10 +4,11 @@ import java.io.*;
 import org.apache.commons.io.*;
 
 public class Skrot {
-  public static Skrot with(IAlgorithm algo) throws Exception {
-    if (algo == Algorithm.LZMA)
+
+  public static Skrot with(Codec codec) throws Exception {
+    if (codec == Codec.LZMA)
       return new Skrot(new LZMA());
-    throw new Exception("No such algorithm: " + algo);
+    throw new Exception("No such algorithm: " + codec);
   }
 
   public void model(final InputStream model, final OutputStream output)
