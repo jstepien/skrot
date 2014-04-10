@@ -59,9 +59,9 @@ public class Skrot {
     return new SequenceInputStream(in1, in2);
   }
 
-  private Skrot(ICoder coder) {
+  private Skrot(ICodec coder) {
     this.coder = coder;
   }
 
-  private final ICoder coder;
+  private final ICodec coder;
 }

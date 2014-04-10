@@ -4,7 +4,7 @@ import java.io.*;
 import org.apache.commons.io.*;
 import SevenZip.Compression.LZMA.*;
 
-class LZMA implements ICoder {
+class LZMA implements ICodec {
   public void encode(final InputStream in, final OutputStream out)
     throws IOException
   {
