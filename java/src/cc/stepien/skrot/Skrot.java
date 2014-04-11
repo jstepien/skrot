@@ -8,6 +8,8 @@ public class Skrot {
   public static Skrot with(Codec codec) throws Exception {
     if (codec == Codec.LZMA)
       return new Skrot(new LZMA());
+    if (codec == Codec.LZ4)
+      return new Skrot(new LZ4());
     throw new Exception("No such algorithm: " + codec);
   }
 
