@@ -3,8 +3,16 @@ package cc.stepien.skrot;
 import java.io.*;
 import org.apache.commons.io.*;
 
+/**
+ * Pure Java implementation of Skrot compression.
+ * Create a thread-safe instance using {@link #with}.
+ */
 public class Skrot {
 
+  /**
+   * Returns an instance backed by a given compression algorithm. Throws an
+   * exception if the codec is invalid.
+   */
   public static Skrot with(Codec codec) throws Exception {
     if (codec == Codec.LZMA)
       return new Skrot(new LZMA());
@@ -13,12 +21,20 @@ public class Skrot {
     throw new Exception("No such algorithm: " + codec);
   }
 
+  /**
+   * Builds a Skrot model reading data from the given {@link InputStream} and
+   * writes it into the given {@link OutputStream}.
+   */
   public void model(final InputStream model, final OutputStream output)
     throws IOException
   {
     coder.encode(model, output);
   }
 
+  /**
+   * Compresses given input stream using given model and writes it to the given
+   * output stream.
+   */
   public void compress(final InputStream model, final InputStream input,
       final OutputStream output) throws IOException {
     final byte[] modelArr = IOUtils.toByteArray(model);
@@ -39,6 +55,11 @@ public class Skrot {
     output.write(comprConcatArr, idx, comprConcatArr.length - idx);
   }
 
+
+  /**
+   * Decompresses given input stream using given model and writes it to the
+   * given output stream.
+   */
   public void decompress(final InputStream model, final InputStream input,
       final OutputStream output) throws IOException {
     final byte[] modelArr = IOUtils.toByteArray(model);
