@@ -2,7 +2,7 @@
 
 A customisable compression utility dedicated to short inputs.
 
-[Skrót][definition] is a C library allowing you to build a model of your data
+[Skrót][definition] allows you to build a model of your data
 and use it to compress short byte sequences of predictable contents.
 It can efficiently compress byte sequences shorter than 200B.
 It's based on established dictionary-based data compression algorithms: LZMA and
@@ -11,10 +11,20 @@ LZ4.
 Interested in some numbers?
 Take a look at [results of our benchmarks][numbers].
 
+Skrót comes in two variants:
+
+  - a native library written in portable C, and
+  - a pure Java library with no native dependencies.
+
 [numbers]: https://github.com/jstepien/skrot/tree/master/benchmark
 [definition]: http://en.wiktionary.org/wiki/skr%C3%B3t
 
 ## Usage
+
+Skrót has two implementations: a native one and a JVM one.
+They share no code and the way they're built and used differs.
+
+### Native library and a command line tool
 
 A tentative C API is specified in `skr.h`.
 It's implemented in form of a shared library `libskr`.
@@ -38,6 +48,18 @@ Both `skr` and `libskr` can be built by invoking `make`.
 [xz]: http://tukaani.org/xz/
 [lz4]: https://code.google.com/p/lz4/
 [brew]: https://github.com/Homebrew/homebrew
+
+### Java library
+
+The API of the Java library has some [documentation][javadoc].
+
+The Java library is built with [Leiningen][lein];
+Install it first if you want to build a JAR.
+Afterwards execute `lein jar` in the `java` directory.
+The JAR will be placed in the `java/target` directory.
+
+[lein]: http://leiningen.org/
+[javadoc]: https://jstepien.github.io/skrot/javadoc/master/
 
 ## Theoretical background
 
