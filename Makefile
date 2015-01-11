@@ -18,7 +18,7 @@ $(SHARED_LIB): skr.c
 	$(CC) $(CFLAGS) $^ -shared -o $@ -llzma -llz4 -I.
 
 skr: skr.rs $(SHARED_LIB)
-	rustc -O $< -o $@
+	rustc -O $< -o $@ -L.
 
 clean:
 	rm -f skr $(SHARED_LIB) $(PKG).tar.bz2

@@ -5,7 +5,6 @@ use libc::{size_t, free, c_void};
 use std::os::args;
 use std::path::Path;
 use std::ptr::null_mut;
-use std::vec::raw::from_buf;
 
 #[link(name = "skr")]
 extern {
@@ -30,8 +29,8 @@ fn process_vec(inp: Vec<u8>, fun: Fun) -> Vec<u8> {
     let default_opts = 0;
     let buf = null_mut();
     let nout = fun(inp.as_ptr(), inp.len() as size_t, &buf, 0, &default_opts);
-    assert!(buf.is_not_null() && nout > 0);
-    let out = from_buf(buf as *const u8, nout as uint);
+    assert!(!buf.is_null() && nout > 0);
+    let out = Vec::from_raw_buf(buf as *const u8, nout as usize);
     free(buf as *mut c_void);
     out
   }
@@ -45,8 +44,8 @@ fn process_vec2(inp: Vec<u8>, inp2: Vec<u8>, fun: Fun2) -> Vec<u8> {
                    inp2.as_ptr(), inp2.len() as size_t,
                    &buf, 0,
                    &default_opts);
-    assert!(buf.is_not_null() && nout > 0);
-    let out = from_buf(buf as *const u8, nout as uint);
+    assert!(!buf.is_null() && nout > 0);
+    let out = Vec::from_raw_buf(buf as *const u8, nout as usize);
     free(buf as *mut c_void);
     out
   }
@@ -54,13 +53,13 @@ fn process_vec2(inp: Vec<u8>, inp2: Vec<u8>, fun: Fun2) -> Vec<u8> {
 
 fn main() {
   let args = args();
-  let model = || {
+  let model = |&:| {
     assert!(args.len() == 2);
     let model_file = args[1].as_slice();
     File::open(&Path::new(model_file)).read_to_end().unwrap()
   };
   let output = {
-    let input = || { stdin().read_to_end().unwrap() };
+    let input = |&:| { stdin().read_to_end().unwrap() };
     let prog = args[0].as_slice();
     if prog.ends_with("mkskr") {
       process_vec(input(), skr_model)
