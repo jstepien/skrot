@@ -51,7 +51,7 @@ public class Skrot {
         break;
     final int diff = modelArr.length - idx;
     assert(diff < 0xff);
-    output.write(diff);
+    output.write(diff - 128);
     output.write(comprConcatArr, idx, comprConcatArr.length - idx);
   }
 
@@ -64,7 +64,8 @@ public class Skrot {
       final OutputStream output) throws IOException {
     final byte[] modelArr = IOUtils.toByteArray(model);
     final byte[] inputArr = IOUtils.toByteArray(input);
-    final int cutoff = modelArr.length - inputArr[0];
+    final int diff = inputArr[0] + 128;
+    final int cutoff = modelArr.length - diff;
     final int patchedLen = cutoff + inputArr.length - 1;
     final ByteArrayOutputStream uncompModel = new ByteArrayOutputStream();
     coder.decode(new ByteArrayInputStream(modelArr), uncompModel);
