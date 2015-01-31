@@ -13,6 +13,8 @@ endif
 SHARED_LIB = libskr.$(SHARED_EXT)
 
 all: $(SHARED_LIB) skr
+	ln -sf skr mkskr
+	ln -sf skr unskr
 
 $(SHARED_LIB): skr.c
 	$(CC) $(CFLAGS) $^ -shared -o $@ -llzma -llz4 -I.
@@ -21,7 +23,7 @@ skr: skr.rs $(SHARED_LIB)
 	rustc -O $< -o $@ -L.
 
 clean:
-	rm -f skr $(SHARED_LIB) $(PKG).tar.bz2
+	rm -f unskr mkskr skr $(SHARED_LIB) $(PKG).tar.bz2
 	+make clean -C benchmark
 
 check: all
