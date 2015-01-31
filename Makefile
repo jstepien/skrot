@@ -24,6 +24,9 @@ clean:
 	rm -f skr $(SHARED_LIB) $(PKG).tar.bz2
 	+make clean -C benchmark
 
+check: all
+	./t.sh
+
 benchmark:
 	+make -C benchmark $(LIBRARY_PATH)=$(PWD)
 

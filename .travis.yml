@@ -1,6 +1,6 @@
 language: clojure
 script:
-  - make
+  - make check
   - cd java && lein test
 install:
   - sudo add-apt-repository -y ppa:gezakovacs/lz4
