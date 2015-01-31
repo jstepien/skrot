@@ -38,7 +38,7 @@ $(PKG).tar.bz2:
 	test -n "$(VERSION)"
 	rm -rf $(PKG)
 	mkdir $(PKG)
-	bash -c 'cp -r README.md Makefile {mk,un}skr skr.{c,h,rs} benchmark $(PKG)/'
+	bash -c 'cp -r README.md Makefile t.sh skr.{c,h,rs} benchmark $(PKG)/'
 	sed -i $(PKG)/Makefile -e 's,^VERSION =.*,VERSION = $(VERSION),'
 	+make -C $(PKG) clean
 	tar -cjf $@ $(PKG)
