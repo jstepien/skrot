@@ -23,8 +23,8 @@ run_tests() {
 }
 
 go() {
-  PATH=$PWD:$PATH
-  LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
+  export PATH=$PWD:$PATH
+  export LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH-$PWD}
   n=200
 
   for _ in $(seq $n); do
