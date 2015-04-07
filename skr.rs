@@ -63,27 +63,28 @@ fn process_vec2(inp: Vec<u8>, inp2: Vec<u8>, fun: Fun2) -> Vec<u8> {
   }
 }
 
+fn model_from_args() -> Vec<u8> {
+  let model_file = args().nth(1).unwrap();
+  let mut buf = Vec::new();
+  let path = Path::new(&model_file);
+  File::open(path).unwrap().read_to_end(&mut buf).unwrap();
+  buf
+}
+
 fn main() {
-  let model = || {
-    let model_file = args().nth(1).unwrap();
-    let mut buf = Vec::new();
-    let path = Path::new(&model_file);
-    File::open(path).unwrap().read_to_end(&mut buf).unwrap();
-    buf
-  };
   let output = {
-    let input = || {
+    let prog = args().nth(0).unwrap();
+    let input = {
       let mut buf = Vec::new();
       Read::read_to_end(&mut stdin(), &mut buf).unwrap();
       buf
     };
-    let prog = args().nth(0).unwrap();
     if prog.ends_with("mkskr") {
-      process_vec(input(), skr_model)
+      process_vec(input, skr_model)
     } else if prog.ends_with("unskr") {
-      process_vec2(model(), input(), skr_decompress)
+      process_vec2(model_from_args(), input, skr_decompress)
     } else {
-      process_vec2(model(), input(), skr_compress)
+      process_vec2(model_from_args(), input, skr_compress)
     }
   };
   stdout().write(&output).unwrap();
