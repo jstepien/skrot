@@ -4,10 +4,10 @@ Let's see how Skrót performs in some synthetic microbenchmarks.
 To run code in this directory you'll need Ruby and [Bundler][b].
 [R][r] will be used to obtain some summary statistics.
 
-    bundle && make
+    bundle && bundle exec make
 
-All results below were obtained on a glacial age Core 2 Duo running at 2.1GHz.
-On an i7 CPU encoding and decoding is nearly twice faster.
+All results below were obtained on an i5-4200U CPU.
+Time of encoding and decoding is given in milliseconds.
 
 ## The people benchmark
 
@@ -37,86 +37,86 @@ time of encoding and decoding in milliseconds.
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :117.0   Min.   :43.00   Min.   :0.338   Min.   :18.97   Min.   :0.709
-1st Qu.:128.0   1st Qu.:50.00   1st Qu.:0.388   1st Qu.:19.10   1st Qu.:0.719
-Median :133.0   Median :53.00   Median :0.405   Median :19.32   Median :0.738
-Mean   :133.2   Mean   :53.76   Mean   :0.403   Mean   :19.30   Mean   :0.737
-3rd Qu.:138.2   3rd Qu.:57.00   3rd Qu.:0.417   3rd Qu.:19.47   3rd Qu.:0.751
-Max.   :150.0   Max.   :67.00   Max.   :0.469   Max.   :20.18   Max.   :0.828
+Min.   :120.0   Min.   :43.00   Min.   :0.3543  Min.   :7.276  Min.   :0.8594
+1st Qu.:127.8   1st Qu.:49.00   1st Qu.:0.3857  1st Qu.:7.349  1st Qu.:0.8723
+Median :132.0   Median :53.00   Median :0.4007  Median :7.400  Median :0.8766
+Mean   :133.6   Mean   :53.63   Mean   :0.4010  Mean   :7.432  Mean   :0.8781
+3rd Qu.:139.0   3rd Qu.:57.25   3rd Qu.:0.4156  3rd Qu.:7.475  3rd Qu.:0.8817
+Max.   :153.0   Max.   :65.00   Max.   :0.4483  Max.   :8.142  Max.   :0.9409
 ```
 
 ### LZ4
 
 ```
-   Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :117.0   Min.   :58.00   Min.   :0.483   Min.   :0.320   Min.   :0.056
-1st Qu.:127.0   1st Qu.:73.75   1st Qu.:0.569   1st Qu.:0.331   1st Qu.:0.058
-Median :133.0   Median :78.50   Median :0.590   Median :0.352   Median :0.059
-Mean   :132.8   Mean   :78.35   Mean   :0.589   Mean   :0.353   Mean   :0.067
-3rd Qu.:138.0   3rd Qu.:83.00   3rd Qu.:0.606   3rd Qu.:0.366   3rd Qu.:0.070
-Max.   :154.0   Max.   :99.00   Max.   :0.675   Max.   :0.428   Max.   :0.230
+   Original        Encoded          Ratio         Enc. time      Dec. time
+Min.   :120.0   Min.   : 66.00  Min.   :0.5308  Min.   :0.149  Min.   :0.0179
+1st Qu.:127.8   1st Qu.: 75.00  1st Qu.:0.5827  1st Qu.:0.151  1st Qu.:0.0182
+Median :132.0   Median : 80.00  Median :0.6043  Median :0.152  Median :0.0184
+Mean   :133.6   Mean   : 80.62  Mean   :0.6030  Mean   :0.153  Mean   :0.0187
+3rd Qu.:139.0   3rd Qu.: 86.00  3rd Qu.:0.6250  3rd Qu.:0.153  3rd Qu.:0.0189
+Max.   :153.0   Max.   :106.00  Max.   :0.6928  Max.   :0.187  Max.   :0.0253
 ```
 
 ## The simplewiki-20 benchmark
 
 This benchmark uses a [dump][w] of Simple English Wikipedia's articles names.
 Names are filtered; only ones having at least 20B are considered. Space savings
-are around 20% for LZMA and 10% for LZ4.
+are around 15% for both LZMA and LZ4.
 
 ### LZMA
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :21.00   Min.   :14.00   Min.   :0.439   Min.   :30.41   Min.   :3.024
-1st Qu.:24.00   1st Qu.:19.00   1st Qu.:0.666   1st Qu.:30.51   1st Qu.:3.031
-Median :27.00   Median :22.00   Median :0.813   Median :30.64   Median :3.047
-Mean   :29.22   Mean   :22.12   Mean   :0.788   Mean   :30.66   Mean   :3.054
-3rd Qu.:31.00   3rd Qu.:24.00   3rd Qu.:0.907   3rd Qu.:30.78   3rd Qu.:3.068
-Max.   :57.00   Max.   :43.00   Max.   :1.148   Max.   :31.35   Max.   :3.137
+Min.   :21.00   Min.   :14.00   Min.   :0.4070  Min.   :19.18  Min.   :3.716
+1st Qu.:23.00   1st Qu.:20.00   1st Qu.:0.7308  1st Qu.:19.40  1st Qu.:3.735
+Median :25.50   Median :23.50   Median :0.8571  Median :19.47  Median :3.764
+Mean   :28.96   Mean   :23.73   Mean   :0.8667  Mean   :19.53  Mean   :3.766
+3rd Qu.:31.00   3rd Qu.:26.00   3rd Qu.:1.0435  3rd Qu.:19.64  3rd Qu.:3.777
+Max.   :86.00   Max.   :39.00   Max.   :1.2727  Max.   :20.85  Max.   :4.203
 ```
 
 ### LZ4
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :21.00   Min.   :14.00   Min.   :0.423   Min.   :1.098  Min.   :0.1356
-1st Qu.:22.75   1st Qu.:20.00   1st Qu.:0.752   1st Qu.:1.119  1st Qu.:0.1407
-Median :25.00   Median :24.00   Median :0.908   Median :1.140  Median :0.1468
-Mean   :27.15   Mean   :24.06   Mean   :0.909   Mean   :1.146  Mean   :0.1526
-3rd Qu.:29.00   3rd Qu.:28.00   3rd Qu.:1.074   3rd Qu.:1.158  3rd Qu.:0.1583
-Max.   :54.00   Max.   :43.00   Max.   :1.381   Max.   :1.374  Max.   :0.2519
+Min.   :21.00   Min.   :13.0   Min.   :0.2600  Min.   :0.9400  Min.   :0.070
+1st Qu.:23.00   1st Qu.:19.0   1st Qu.:0.6721  1st Qu.:0.9475  1st Qu.:0.071
+Median :25.50   Median :23.0   Median :0.8519  Median :0.9518  Median :0.071
+Mean   :28.96   Mean   :23.2   Mean   :0.8501  Mean   :0.9538  Mean   :0.072
+3rd Qu.:31.00   3rd Qu.:26.0   3rd Qu.:1.0536  3rd Qu.:0.9582  3rd Qu.:0.072
+Max.   :86.00   Max.   :38.0   Max.   :1.2273  Max.   :0.9822  Max.   :0.075
 ```
 
 ## The simplewiki-30 benchmark
 
 For a comparison, here are results for the same dataset but limited to names not
-shorter than 30B. Here savings are over 40% for LZMA and over 30% for LZ4.
+shorter than 30B. Here savings are over 40% for LZMA and nearly 30% for LZ4.
 
 ### LZMA
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :31.00   Min.   :13.00   Min.   :0.243   Min.   :36.02   Min.   :3.438
-1st Qu.:33.00   1st Qu.:18.00   1st Qu.:0.478   1st Qu.:36.17   1st Qu.:3.445
-Median :37.00   Median :22.00   Median :0.555   Median :36.28   Median :3.459
-Mean   :39.52   Mean   :22.08   Mean   :0.574   Mean   :36.30   Mean   :3.465
-3rd Qu.:42.00   3rd Qu.:25.25   3rd Qu.:0.689   3rd Qu.:36.41   3rd Qu.:3.480
-Max.   :78.00   Max.   :41.00   Max.   :0.843   Max.   :36.73   Max.   :3.537
+Min.   :31.00   Min.   :13.00   Min.   :0.2742  Min.   :25.33  Min.   :4.208
+1st Qu.:33.75   1st Qu.:18.00   1st Qu.:0.4362  1st Qu.:25.57  1st Qu.:4.224
+Median :37.00   Median :22.50   Median :0.5679  Median :25.79  Median :4.260
+Mean   :40.86   Mean   :22.52   Mean   :0.5741  Mean   :25.82  Mean   :4.261
+3rd Qu.:43.25   3rd Qu.:26.00   3rd Qu.:0.7059  3rd Qu.:25.96  3rd Qu.:4.290
+Max.   :82.00   Max.   :42.00   Max.   :0.9412  Max.   :26.83  Max.   :4.375
 ```
 
 ### LZ4
 
 ```
    Original        Encoded          Ratio         Enc. time       Dec. time
-Min.   :31.00   Min.   :16.00   Min.   :0.296   Min.   :1.543  Min.   :0.1703
-1st Qu.:32.75   1st Qu.:19.75   1st Qu.:0.516   1st Qu.:1.564  1st Qu.:0.1751
-Median :36.00   Median :25.00   Median :0.648   Median :1.586  Median :0.1841
-Mean   :38.85   Mean   :26.16   Mean   :0.691   Mean   :1.588  Mean   :0.1853
-3rd Qu.:40.00   3rd Qu.:32.00   3rd Qu.:0.871   3rd Qu.:1.609  3rd Qu.:0.1917
-Max.   :73.00   Max.   :51.00   Max.   :1.281   Max.   :1.671  Max.   :0.2997
+Min.   :31.00   Min.   :17.00   Min.   :0.3559  Min.   :1.360  Min.   :0.083
+1st Qu.:33.75   1st Qu.:24.00   1st Qu.:0.5714  1st Qu.:1.375  1st Qu.:0.084
+Median :37.00   Median :28.00   Median :0.7292  Median :1.384  Median :0.085
+Mean   :40.86   Mean   :28.74   Mean   :0.7333  Mean   :1.389  Mean   :0.086
+3rd Qu.:43.25   3rd Qu.:33.00   3rd Qu.:0.8832  3rd Qu.:1.393  3rd Qu.:0.086
+Max.   :82.00   Max.   :58.00   Max.   :1.1471  Max.   :1.471  Max.   :0.120
 ```
 
 [b]: http://bundler.io/
 [r]: http://www.r-project.org/
 [f]: http://faker.rubyforge.org/
-[w]: http://dumps.wikimedia.org/simplewiki/20140116/
+[w]: http://dumps.wikimedia.org/simplewiki/20150406/

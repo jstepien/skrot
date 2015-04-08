@@ -24,7 +24,7 @@ people-sample:
 people.lzma:
 	./generate_people.rb | head -50 | ../mkskr > $@
 
-DUMP = simplewiki-20140116-all-titles
+DUMP = simplewiki-20150406-all-titles
 
 simplewiki-20.csv: ../skr simplewiki-20.lzma simplewiki-20-sample
 	cat simplewiki-20-sample | ./benchmark.rb simplewiki-20.lzma > $@
@@ -45,7 +45,7 @@ simplewiki-30.lzma: $(DUMP)-30
 	cat $^ | $(RANDOMISE) | head -1000 | ../mkskr > $@
 
 $(DUMP)-20:
-	curl -s http://dumps.wikimedia.org/simplewiki/20140116/$(DUMP).gz \
+	curl -s http://dumps.wikimedia.org/simplewiki/20150406/$(DUMP).gz \
 		| zcat | egrep '.{20}' > $@
 
 $(DUMP)-30: $(DUMP)-20
