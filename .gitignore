@@ -6,3 +6,5 @@ benchmark/simplewiki*
 java/target
 java/.lein-repl-history
 skr
+mkskr
+unskr

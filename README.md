@@ -34,7 +34,7 @@ they're available in [Homebrew][brew] as `lz4` and `xz`.
 
 `skr` and its aliases `unskr` and `mkskr` are command line wrappers around
 `libskr`.
-As of time of writing it's written in Rust.
+As of time of writing it's written in Python.
 They should be invoked in a following way:
 
   - `mkskr < raw_model > model` builds a Skrót model file from standard input,

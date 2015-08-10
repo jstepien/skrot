@@ -4,6 +4,5 @@ script:
   - cd java && lein test
 install:
   - sudo add-apt-repository -y ppa:gezakovacs/lz4
-  - sudo add-apt-repository -y ppa:hansjorg/rust
   - sudo apt-get update
-  - sudo apt-get install liblzma-dev liblz4-dev rust-nightly
+  - sudo apt-get install liblzma-dev liblz4-dev

@@ -12,18 +12,16 @@ else
 endif
 SHARED_LIB = libskr.$(SHARED_EXT)
 
-all: $(SHARED_LIB) skr
-	ln -sf skr mkskr
-	ln -sf skr unskr
+all: $(SHARED_LIB)
+	ln -sf skr.py mkskr
+	ln -sf skr.py unskr
+	ln -sf skr.py skr
 
 $(SHARED_LIB): skr.c
 	$(CC) $(CFLAGS) $^ -shared -o $@ -llzma -llz4 -I.
 
-skr: skr.rs $(SHARED_LIB)
-	rustc -O $< -o $@ -L.
-
 clean:
-	rm -f unskr mkskr skr $(SHARED_LIB) $(PKG).tar.bz2
+	rm -f unskr mkskr $(SHARED_LIB) $(PKG).tar.bz2
 	+make clean -C benchmark
 
 check: all
@@ -38,7 +36,7 @@ $(PKG).tar.bz2:
 	test -n "$(VERSION)"
 	rm -rf $(PKG)
 	mkdir $(PKG)
-	bash -c 'cp -r README.md Makefile t.sh skr.{c,h,rs} benchmark $(PKG)/'
+	bash -c 'cp -r README.md Makefile t.sh skr.{c,h,py} benchmark $(PKG)/'
 	sed -i $(PKG)/Makefile -e 's,^VERSION =.*,VERSION = $(VERSION),'
 	+make -C $(PKG) clean
 	tar -cjf $@ $(PKG)
