@@ -160,7 +160,7 @@ typedef const struct {
   fun_t* decomp;
 } funs_t;
 
-funs_t function_pairs[] = {
+static funs_t function_pairs[] = {
   { &lzma, &unlzma },
   { &lz4, &unlz4 },
 };
