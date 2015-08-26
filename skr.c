@@ -229,9 +229,13 @@ skr_decompress(const uint8_t* model, size_t model_len,
     buffer = realloc(buffer, patched_len);
   memcpy(buffer, model, cutoff);
   memcpy(buffer + cutoff, input + 1, input_len - 1);
-  size_t decompr_len = fns->decomp(buffer, patched_len, &decomp, 0);
+  int decompr_len = fns->decomp(buffer, patched_len, &decomp, 0);
   free(buffer);
-  size_t needed_out_len = decompr_len - full_model_len;
+  int needed_out_len = decompr_len - full_model_len;
+  if (needed_out_len <= 0) {
+    free(decomp);
+    return -1;
+  }
   if (output_len < needed_out_len)
     *output = realloc(*output, needed_out_len);
   memcpy(*output, decomp + full_model_len, needed_out_len);
