@@ -23,7 +23,10 @@ public class Skrot {
 
   /**
    * Builds a Skrot model reading data from the given {@link InputStream} and
-   * writes it into the given {@link OutputStream}.
+   * writes it into the given {@link OutputStream}. Use the generated model for
+   * compression and decompression.
+   * @param model Arbitrary input
+   * @param output Generated model
    */
   public void model(final InputStream model, final OutputStream output)
     throws IOException
@@ -34,6 +37,8 @@ public class Skrot {
   /**
    * Compresses given input stream using given model and writes it to the given
    * output stream.
+   * @param model A model created with {@link #model}
+   * @param input Arbitrary input
    */
   public void compress(final InputStream model, final InputStream input,
       final OutputStream output) throws IOException {
@@ -59,6 +64,8 @@ public class Skrot {
   /**
    * Decompresses given input stream using given model and writes it to the
    * given output stream.
+   * @param model A model created with {@link #model}
+   * @param input Data compressed with {@link #compress}
    */
   public void decompress(final InputStream model, final InputStream input,
       final OutputStream output) throws IOException {
