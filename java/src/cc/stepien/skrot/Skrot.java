@@ -13,12 +13,12 @@ public class Skrot {
    * Returns an instance backed by a given compression algorithm. Throws an
    * exception if the codec is invalid.
    */
-  public static Skrot with(Codec codec) throws Exception {
+  public static Skrot with(Codec codec) {
     if (codec == Codec.LZMA)
       return new Skrot(new LZMA());
     if (codec == Codec.LZ4)
       return new Skrot(new LZ4());
-    throw new Exception("No such algorithm: " + codec);
+    throw new RuntimeException("No such algorithm: " + codec);
   }
 
   /**
