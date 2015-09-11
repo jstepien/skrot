@@ -1,16 +1,13 @@
 .PHONY: all clean
 RANDOMISE = ruby -pe '$$_ = "\#{rand} \#{$$_}"' | sort | sed 's/[\.0-9]* //'
 
-all: measure
+all:
 	+make people.csv simplewiki-20.csv simplewiki-30.csv
 	(\
 		echo 'summary(read.csv("people.csv"))';\
 		echo 'summary(read.csv("simplewiki-20.csv"))';\
 		echo 'summary(read.csv("simplewiki-30.csv"))';\
 		) | R -q --vanilla
-
-measure: measure.rs ../skr
-	rustc -O $< -o $@ -L ..
 
 ../skr:
 	+make -C .. skr
@@ -52,4 +49,4 @@ $(DUMP)-30: $(DUMP)-20
 	cat $< | egrep '.{30}' > $@
 
 clean:
-	rm -f people* simplewiki* measure
+	rm -f people* simplewiki*
