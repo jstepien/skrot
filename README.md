@@ -27,11 +27,27 @@ They share no code and the way they're built and used differs.
 
 ### Native library and a command line tool
 
-A tentative C API is specified in `skr.h`.
+A tentative C API is specified in [`skr.h`][skr.h].
 It's implemented in form of a shared library `libskr`.
 Its only dependencies are [liblz4][lz4] and [liblzma][xz];
 they're present in repositories of most contemporary GNU/Linux distributions and
 they're available in [Homebrew][brew] as `lz4` and `xz`.
+
+```c
+int skr_model(const uint8_t* input, size_t input_len,
+              uint8_t** output, size_t output_len,
+              skr_opts_t* opts);
+
+int skr_compress(const uint8_t* model, size_t model_len,
+                 const uint8_t* input, size_t input_len,
+                 uint8_t** output, size_t output_len,
+                 skr_opts_t* opts);
+
+int skr_decompress(const uint8_t* model, size_t model_len,
+                   const uint8_t* input, size_t input_len,
+                   uint8_t** output, size_t output_len,
+                   skr_opts_t* opts);
+```
 
 `skr` and its aliases `unskr` and `mkskr` are command line wrappers around
 `libskr`.
@@ -49,6 +65,7 @@ Both `skr` and `libskr` can be built by invoking `make`.
 [xz]: http://tukaani.org/xz/
 [lz4]: https://code.google.com/p/lz4/
 [brew]: https://github.com/Homebrew/homebrew
+[skr.h]: https://github.com/jstepien/skrot/blob/master/skr.h
 
 ### Java library
 
