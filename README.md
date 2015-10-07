@@ -77,7 +77,7 @@ Afterwards execute `lein jar` in the `java` directory.
 The JAR will be placed in the `java/target` directory.
 
 [lein]: http://leiningen.org/
-[javadoc]: https://jstepien.github.io/skrot/javadoc/master/
+[javadoc]: https://jstepien.github.io/skrot/javadoc/master/cc/stepien/skrot/Skrot.html
 
 ## Theoretical background
 
