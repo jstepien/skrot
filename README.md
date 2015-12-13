@@ -1,7 +1,7 @@
-# Skrót
+# Skrót [![Build Status](https://travis-ci.org/jstepien/skrot.svg?branch=master)](https://travis-ci.org/jstepien/skrot)
 
 A customisable compression utility dedicated to short inputs.
-[![Build Status](https://travis-ci.org/jstepien/skrot.svg?branch=master)](https://travis-ci.org/jstepien/skrot)
+[Get the newest release.](https://github.com/jstepien/skrot/releases)
 
 [Skrót][definition] allows you to build a model of your data
 and use it to compress short byte sequences of predictable contents.
