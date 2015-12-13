@@ -1,5 +1,7 @@
 # Benchmarking Skrót
 
+> **Abstract:** Skrót is fast, robust, and you can adjust it to your needs.
+
 Let's see how Skrót performs in some synthetic microbenchmarks.
 To run code in this directory you'll need Ruby and [Bundler][b].
 [R][r] will be used to obtain some summary statistics.
