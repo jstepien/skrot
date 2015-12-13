@@ -27,7 +27,7 @@ clean:
 check: all
 	./t.sh
 
-benchmark:
+benchmark: all
 	+make -C benchmark $(LIBRARY_PATH)=$(PWD)
 
 tarball: $(PKG).tar.bz2

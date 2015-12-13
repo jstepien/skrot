@@ -2,7 +2,7 @@
 RANDOMISE = ruby -pe '$$_ = "\#{rand} \#{$$_}"' | sort | sed 's/[\.0-9]* //'
 
 all:
-	+make people.csv simplewiki-20.csv simplewiki-30.csv
+	bundle exec make people.csv simplewiki-20.csv simplewiki-30.csv
 	(\
 		echo 'summary(read.csv("people.csv"))';\
 		echo 'summary(read.csv("simplewiki-20.csv"))';\
